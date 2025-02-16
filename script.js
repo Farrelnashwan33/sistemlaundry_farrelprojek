@@ -50,7 +50,15 @@ $(document).ready(function() {
         const pickupDate = new Date();
         pickupDate.setDate(pickupDate.getDate() + 3 + parseInt(additionalDays) + totalKg); // Default 3 days + additional days + total kg
 
-        $('#total-price').text(totalPrice + additionalPrice);
+        // Apply discount if totalKg > 4
+        let discount = 0;
+        if (totalKg > 4) {
+            discount = totalPrice * 0.1; // 10% discount
+        }
+
+        const finalPrice = totalPrice + additionalPrice - discount;
+
+        $('#total-price').text(finalPrice);
         $('#additional-days').text(additionalDays);
         $('#additional-price').text(additionalPrice);
         $('#pickup-date').text(pickupDate.toLocaleDateString());
