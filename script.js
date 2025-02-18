@@ -1,98 +1,140 @@
-$(document).ready(function() {
-    let cart = [];
-    let additionalDays = 0;
-    let deliveryService = 'GRAB EXPRESS';
+$(document).ready(function () {
+    const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+    const $cartTable = $("#cart-items");
+    const $totalPriceElement = $("#total-price");
+    const $paymentModal = $("#payment-modal");
+    const $deliveryEstimate = $("#delivery-estimate");
+    const $pickupDate = $("#pickup-date");
+    const $paymentTotal = $("#payment-total");
 
-    // Load cart from localStorage
-    if (localStorage.getItem('cart')) {
-        cart = JSON.parse(localStorage.getItem('cart'));
-        updateCart();
+    // Format currency to "Rp xx.xxx"
+    function formatCurrency(amount) {
+        return `Rp ${amount.toLocaleString("id-ID")}`;
     }
 
-    // Add to cart
-    $('.add-to-cart').click(function() {
-        const item = $(this).data('item');
-        const price = $(this).data('price');
-        const kg = $(this).closest('.card-body').find('.kg-input').val();
+    // Render cart items
+    function renderCart() {
+        $cartTable.empty();
+        let totalPrice = 0;
 
-        if (kg > 0) {
-            cart.push({ item, price, kg });
-            updateCart();
-        }
-    });
+        cartItems.forEach((item, index) => {
+            const subtotal = item.price * item.weight;
+            totalPrice += subtotal;
 
-    // New Order
-    $('#new-order-btn').click(function() {
-        $('#newOrderModal').modal('show');
-    });
-
-    // Submit new order form
-    $('#new-order-form').submit(function(e) {
-        e.preventDefault();
-        const itemName = $('#item-name').val();
-        const itemPrice = $('#item-price').val();
-        const itemKg = $('#item-kg').val();
-        additionalDays = $('#additional-days').val();
-        deliveryService = $('#delivery-service').val();
-
-        if (itemName && itemPrice && itemKg) {
-            cart.push({ item: itemName, price: itemPrice, kg: itemKg });
-            updateCart();
-            $('#newOrderModal').modal('hide');
-        }
-    });
-
-    // Checkout
-    $('#checkout-btn').click(function() {
-        const totalKg = cart.reduce((sum, item) => sum + parseInt(item.kg), 0);
-        const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.kg), 0);
-        const additionalPrice = additionalDays * 5000; // Additional price per day
-        const pickupDate = new Date();
-        pickupDate.setDate(pickupDate.getDate() + 3 + parseInt(additionalDays) + totalKg); // Default 3 days + additional days + total kg
-
-        // Apply discount if totalKg > 4
-        let discount = 0;
-        if (totalKg > 4) {
-            discount = totalPrice * 0.1; // 10% discount
-        }
-
-        const finalPrice = totalPrice + additionalPrice - discount;
-
-        $('#total-price').text(finalPrice);
-        $('#additional-days').text(additionalDays);
-        $('#additional-price').text(additionalPrice);
-        $('#pickup-date').text(pickupDate.toLocaleDateString());
-        $('#delivery-service').text(deliveryService);
-
-        $('#paymentModal').modal('show');
-    });
-
-    // Update cart
-    function updateCart() {
-        $('#cart-items').empty();
-        cart.forEach((item, index) => {
-            $('#cart-items').append(`
-                <li class="list-group-item">
-                    <span>${item.item} - ${item.kg} kg</span>
-                    <span>Rp ${item.price * item.kg}</span>
-                    <button class="btn btn-danger btn-sm remove-item" data-index="${index}">Hapus</button>
-                </li>
-            `);
+            const row = `
+                <tr>
+                    <td>${item.type}</td>
+                    <td>${formatCurrency(item.price)}</td>
+                    <td>${item.weight} Kg</td>
+                    <td>${formatCurrency(subtotal)}</td>
+                    <td><button data-index="${index}" class="remove-item">Hapus</button></td>
+                </tr>
+            `;
+            $cartTable.append(row);
         });
 
-        // Save cart to localStorage
-        localStorage.setItem('cart', JSON.stringify(cart));
+        $totalPriceElement.text(formatCurrency(totalPrice));
+        localStorage.setItem("cart", JSON.stringify(cartItems));
     }
 
-    // Remove item from cart
-    $(document).on('click', '.remove-item', function() {
-        const index = $(this).data('index');
-        cart.splice(index, 1);
-        updateCart();
+    // Add item to cart
+    $(".add-to-cart").on("click", function () {
+        const $item = $(this).closest(".item");
+        const type = $item.data("type");
+        const price = parseInt($item.data("price"));
+        const weight = parseFloat(prompt("Masukkan berat (kg):"));
+
+        if (isNaN(weight) || weight <= 0) {
+            alert("Berat harus berupa angka positif.");
+            return;
+        }
+
+        cartItems.push({ type, price, weight });
+        renderCart();
     });
 
-    // Notification button
-    $('#notification-btn').click(function() {
-        alert('Tidak ada notifikasi baru.');
+    // Remove item from cart
+    $cartTable.on("click", ".remove-item", function () {
+        const index = $(this).data("index");
+        cartItems.splice(index, 1);
+        renderCart();
     });
+
+    // Checkout and calculate total
+    $("#checkout-button").on("click", function () {
+        if (cartItems.length === 0) {
+            alert("Keranjang kosong. Tambahkan item sebelum checkout.");
+            return;
+        }
+
+        // Calculate delivery estimate
+        const totalWeight = cartItems.reduce((acc, item) => acc + item.weight, 0);
+        const deliveryTimeInHours = Math.ceil(totalWeight * 2); // Example: 2 hours per kg
+        const currentDate = new Date();
+        currentDate.setHours(currentDate.getHours() + deliveryTimeInHours);
+
+        // Calculate pickup date
+        const formattedPickupDate = currentDate.toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+        });
+
+        // Calculate total price
+        const totalPrice = cartItems.reduce((acc, item) => acc + item.price * item.weight, 0);
+
+        // Display in modal
+        $deliveryEstimate.text(`${deliveryTimeInHours} jam`);
+        $pickupDate.text(formattedPickupDate);
+        $paymentTotal.text(formatCurrency(totalPrice));
+
+        $paymentModal.fadeIn();
+    });
+
+    // Close modal
+    $("#close-modal").on("click", function () {
+        $paymentModal.fadeOut();
+    });
+
+    // Add custom item, weight, and cost
+    $("#add-extra-item").on("click", function () {
+        const type = prompt("Masukkan nama barang:");
+        const price = parseInt(prompt("Masukkan harga total (Rp):"));
+        const weight = parseFloat(prompt("Masukkan berat (kg):"));
+
+        if (!type || isNaN(price) || isNaN(weight) || price <= 0 || weight <= 0) {
+            alert("Input tidak valid. Pastikan semua data diisi dengan benar.");
+            return;
+        }
+
+        cartItems.push({ type, price, weight });
+        renderCart();
+        alert(`${type} berhasil ditambahkan ke keranjang.`);
+    });
+
+    // Load prices dynamically via AJAX
+    function fetchLaundryPrices() {
+        $.ajax({
+            url: "/api/laundry-prices", // Replace with your actual endpoint
+            method: "GET",
+            success: function (data) {
+                $(".item").each(function () {
+                    const $item = $(this);
+                    const type = $item.data("type");
+                    if (data[type]) {
+                        $item.data("price", data[type]);
+                        $item.find(".price").text(`${formatCurrency(data[type])} / kg`);
+                    }
+                });
+            },
+            error: function () {
+                alert("Gagal memuat harga terbaru.");
+            },
+        });
+    }
+
+    // Initial render
+    fetchLaundryPrices();
+    renderCart();
 });
