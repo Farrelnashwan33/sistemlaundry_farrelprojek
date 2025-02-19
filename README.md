@@ -1,28 +1,66 @@
-# Sistem Smart Laundry Farrel Nashwan
+# Sistem Smart Laundry
 
-Sistem Smart Laundry adalah sebuah aplikasi berbasis web yang dirancang untuk mempermudah proses pencucian pakaian. Aplikasi ini memungkinkan pelanggan untuk memilih jenis barang yang akan dicuci, menambah barang/waktu/biaya, dan melakukan checkout dengan perhitungan harga dan estimasi waktu pengiriman serta tanggal pengambilan secara otomatis.
+Sistem Smart Laundry adalah aplikasi berbasis web untuk mengelola pesanan laundry secara cerdas. Sistem ini memungkinkan pelanggan untuk memilih layanan laundry, menambahkan barang, berat, dan biaya tambahan, serta melakukan pembayaran dengan estimasi waktu pengiriman dan tanggal pengambilan yang ditentukan secara otomatis.
 
-## **Fitur Utama**
-- **Pilih Jenis Laundry**: Pengguna dapat memilih jenis barang seperti baju, jaket, atau karpet, dengan harga per kilogram yang ditampilkan secara dinamis.
-- **Keranjang Belanja**: Barang yang dipilih masuk ke dalam keranjang dengan rincian jenis barang, berat, harga per kilogram, dan subtotal.
-- **Tambah Barang/Waktu/Biaya**: Pelanggan dapat menambahkan barang baru, estimasi waktu, atau biaya tambahan secara manual.
-- **Perhitungan Harga Otomatis**: Total harga dihitung dengan format angka yang benar, seperti **Rp 20.000**, bukan **Rp 20000**.
-- **Estimasi Waktu Pengiriman**: Sistem menghitung waktu pengiriman berdasarkan total berat barang dalam keranjang.
-- **Estimasi Tanggal Pengambilan**: Tanggal pengambilan dihitung secara otomatis sesuai dengan lamanya pengiriman.
-- **Checkout**: Menampilkan detail pembayaran, barcode, estimasi waktu pengiriman, dan tanggal pengambilan.
-- **Harga Dinamis via API**: Harga barang diperbarui secara otomatis menggunakan data dari endpoint API.
+---
 
-## **Teknologi yang Digunakan**
-- **Frontend**:
-  - HTML
-  - CSS
-  - JavaScript (jQuery)
-- **Backend**:
-  - AJAX untuk komunikasi dengan API (simulasi backend untuk mendapatkan harga laundry secara dinamis).
-- **Local Storage**:
-  - Data keranjang disimpan di browser menggunakan Local Storage.
-  
-## **Cara Menjalankan Proyek**
-1. **Clone repository ini**:
+## 🚀 Fitur Utama
+
+1. **Pilih Layanan Laundry**:  
+   Pelanggan dapat memilih jenis layanan laundry seperti baju, jaket, atau karpet dengan harga per kilogram yang dinamis.
+
+2. **Tambah Barang/Waktu/Biaya**:  
+   Tambahkan barang, waktu pengiriman, atau biaya tambahan secara manual melalui input yang interaktif.
+
+3. **Keranjang Belanja**:  
+   Semua pesanan laundry ditampilkan dalam bentuk tabel, lengkap dengan rincian jenis barang, berat, subtotal, dan opsi untuk menghapus item.
+
+4. **Checkout dan Pembayaran**:  
+   - Total biaya ditampilkan dalam format **Rp xx.xxx**.  
+   - Estimasi waktu pengiriman dalam jam.  
+   - Estimasi tanggal pengambilan berdasarkan berat total (kg).  
+   - Barcode pembayaran untuk mempermudah konfirmasi pembayaran.
+
+5. **Harga Laundry Dinamis**:  
+   Harga layanan laundry diperbarui secara otomatis melalui API menggunakan AJAX.
+
+6. **Responsive Design**:  
+   Antarmuka dirancang agar ramah pengguna di perangkat desktop dan mobile.
+
+---
+
+## 🌐 Demo Live
+
+Akses aplikasi ini secara langsung melalui link berikut:  
+👉 **[Sistem Smart Laundry - Vercel](https://sistemlaundry-farrelprojek.vercel.app/)**
+
+---
+
+## 🛠️ Teknologi yang Digunakan
+
+- **Frontend**: HTML, CSS, JavaScript, jQuery
+- **AJAX**: Untuk pengambilan harga laundry dari API
+- **Local Storage**: Untuk menyimpan data pesanan pelanggan sementara
+- **Backend API (placeholder)**: Endpoint untuk data harga dinamis
+- **Barcode**: Gambar barcode untuk mempermudah pembayaran
+
+---
+
+## 📸 Tampilan Sistem
+
+### Halaman Utama
+Pilih layanan laundry dari daftar dengan harga per kilogram yang telah ditentukan.
+
+### Keranjang
+Rincian pesanan pelanggan yang dapat diubah dengan opsi hapus item.
+
+### Modal Pembayaran
+Tampilkan total biaya, estimasi pengiriman, tanggal pengambilan, dan barcode pembayaran.
+
+---
+
+## 🔧 Cara Menggunakan
+
+1. Clone repository ini ke lokal:
    ```bash
    git clone https://github.com/Farrelnashwan33/sistemlaundry_farrelprojek.git
