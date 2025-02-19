@@ -25,4 +25,4 @@ Sistem Smart Laundry adalah sebuah aplikasi berbasis web yang dirancang untuk me
 ## **Cara Menjalankan Proyek**
 1. **Clone repository ini**:
    ```bash
-   git clone 
+   git clone https://github.com/Farrelnashwan33/sistemlaundry_farrelprojek.git
